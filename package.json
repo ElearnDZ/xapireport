@@ -1,0 +1,25 @@
+{
+  "name": "xapiscorecard",
+  "version": "0.0.1",
+  "description": "Report from xAPI",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tunapanda/xapiscorecard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tunapanda/xapiscorecard/issues"
+  },
+  "dependencies": {
+    "tincanjs": "^0.34.1",
+    "tinp": "0.0.3"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "jasmine": "^2.3.2"
+  }
+}
