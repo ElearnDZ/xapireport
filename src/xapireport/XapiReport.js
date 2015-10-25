@@ -4,15 +4,15 @@ var Thenable = require("tinp");
 var ArrayUtil = require("../utils/ArrayUtil");
 
 /**
- * xAPI Scorecard.
+ * xAPI Report.
  */
-function XapiScoreCard() {}
+function XapiReport() {}
 
 /**
  * Load configuration.
  * @method loadConfig
  */
-XapiScoreCard.prototype.loadConfig = function(fn) {
+XapiReport.prototype.loadConfig = function(fn) {
 	var content = fs.readFileSync(fn);
 	var data = JSON.parse(content);
 	this.parseConfig(data);
@@ -22,7 +22,7 @@ XapiScoreCard.prototype.loadConfig = function(fn) {
  * Parse config
  * @method parseConfig
  */
-XapiScoreCard.prototype.parseConfig = function(config) {
+XapiReport.prototype.parseConfig = function(config) {
 	this.tinCan = new TinCan({
 		recordStores: [{
 			endpoint: config.xapiEndpoint,
@@ -37,7 +37,7 @@ XapiScoreCard.prototype.parseConfig = function(config) {
  * Run.
  * @method run.
  */
-XapiScoreCard.prototype.run = function() {
+XapiReport.prototype.run = function() {
 	this.runThenable = new Thenable();
 	this.tinCan.getStatements({
 		params: {},
@@ -51,7 +51,7 @@ XapiScoreCard.prototype.run = function() {
  * On get statement.
  * @method onGetStatements
  */
-XapiScoreCard.prototype.onGetStatements = function(err, result) {
+XapiReport.prototype.onGetStatements = function(err, result) {
 	if (err) {
 		this.runThenable.reject(err);
 		return;
@@ -71,4 +71,4 @@ XapiScoreCard.prototype.onGetStatements = function(err, result) {
 	console.log(this.actors);
 }
 
-module.exports = XapiScoreCard;
+module.exports = XapiReport;

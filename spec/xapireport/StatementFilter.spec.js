@@ -1,6 +1,6 @@
 var TinCan = require("tincanjs");
 var statementData = require("../data/statementdata.json");
-var StatementFilter = require("../../src/xapiscorecard/StatementFilter");
+var StatementFilter = require("../../src/xapireport/StatementFilter");
 
 describe("StatementFilter", function() {
 	it("can check if a statement matches", function() {
