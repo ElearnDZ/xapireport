@@ -2,6 +2,7 @@ var fs = require("fs");
 var TinCan = require("tincanjs");
 var Thenable = require("tinp");
 var ArrayUtil = require("../utils/ArrayUtil");
+var XapiReportColumn = require("./XapiReportColumn");
 
 /**
  * xAPI Report.
@@ -31,6 +32,21 @@ XapiReport.prototype.parseConfig = function(config) {
 			allowFail: false
 		}]
 	});
+
+	this.columns = [];
+
+	for (var i = 0; i < config.columns.length; i++)
+		this.columns.push(this.parseColumn(config.columns[i]));
+}
+
+/**
+ * @method parseColumn
+ * @private
+ */
+XapiReport.prototype.parseColumn = function(columnConfig) {
+	var column = new XapiReportColumn();
+
+	return column;
 }
 
 /**
