@@ -1,3 +1,5 @@
+var ArrayUtil = require("../utils/ArrayUtil");
+
 /**
  * Aggregate a value from an array of statements
  * according to a specification.
@@ -15,12 +17,21 @@ StatementAggregator.AVG = "avg";
 
 StatementAggregator.SCORE = "score";
 StatementAggregator.TIMESTAMP = "timestamp";
+StatementAggregator.STORED = "stored";
 
 /**
  * Set aggregate type.
  * @method setAggregateType
  */
 StatementAggregator.prototype.setAggregateType = function(aggregateType) {
+	if (!ArrayUtil.contains([
+			StatementAggregator.COUNT,
+			StatementAggregator.MIN,
+			StatementAggregator.MAX,
+			StatementAggregator.AVG
+		], aggregateType))
+		throw new Error("Unknown aggregate type: " + aggregateType);
+
 	this.aggregateType = aggregateType;
 }
 
@@ -29,6 +40,13 @@ StatementAggregator.prototype.setAggregateType = function(aggregateType) {
  * @method setAggregateField
  */
 StatementAggregator.prototype.setAggregateField = function(aggregateField) {
+	if (!ArrayUtil.contains([
+			StatementAggregator.SCORE,
+			StatementAggregator.TIMESTAMP,
+			StatementAggregator.STORED
+		], aggregateField))
+		throw new Error("Unknown aggregate field: " + aggregateField);
+
 	this.aggregateField = aggregateField;
 }
 
@@ -49,6 +67,10 @@ StatementAggregator.prototype.getStatementFields = function(statements) {
 
 			case StatementAggregator.TIMESTAMP:
 				val = Date.parse(statement.timestamp);
+				break;
+
+			case StatementAggregator.STORED:
+				val = Date.parse(statement.stored);
 				break;
 		}
 
@@ -98,7 +120,8 @@ StatementAggregator.prototype.aggregate = function(statements) {
 			break;
 	}
 
-	if (this.aggregateField == StatementAggregator.TIMESTAMP)
+	if (this.aggregateField == StatementAggregator.TIMESTAMP ||
+		this.aggregateField == StatementAggregator.STORED)
 		return new Date(res).toISOString();
 
 	return res;

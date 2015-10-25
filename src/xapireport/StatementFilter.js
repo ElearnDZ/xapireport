@@ -9,6 +9,9 @@ function StatementFilter() {}
  * @method setActorEmail
  */
 StatementFilter.prototype.setActorEmail = function(email) {
+	if (email)
+		email = email.replace("mailto:", "");
+
 	this.actorEmail = email;
 }
 

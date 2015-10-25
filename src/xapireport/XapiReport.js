@@ -35,18 +35,11 @@ XapiReport.prototype.parseConfig = function(config) {
 
 	this.columns = [];
 
-	for (var i = 0; i < config.columns.length; i++)
-		this.columns.push(this.parseColumn(config.columns[i]));
-}
-
-/**
- * @method parseColumn
- * @private
- */
-XapiReport.prototype.parseColumn = function(columnConfig) {
-	var column = new XapiReportColumn();
-
-	return column;
+	for (var i = 0; i < config.columns.length; i++) {
+		var column = new XapiReportColumn("Column " + (i + 1));
+		column.parseConfig(config.columns[i]);
+		this.columns.push(column);
+	}
 }
 
 /**
@@ -73,9 +66,16 @@ XapiReport.prototype.onGetStatements = function(err, result) {
 		return;
 	}
 
+	this.processStatements(result.statements);
+}
+
+/**
+ * Process statements.
+ * @method processStatements
+ */
+XapiReport.prototype.processStatements = function(statements) {
 	this.actors = [];
 
-	var statements = result.statements;
 	for (var i = 0; i < statements.length; i++) {
 		var statement = statements[i];
 		var email = statement.actor.mbox;
@@ -84,7 +84,31 @@ XapiReport.prototype.onGetStatements = function(err, result) {
 			this.actors.push(email);
 	}
 
-	console.log(this.actors);
+	//console.log(this.actors);
+	this.data = [];
+
+	var row = [];
+	row.push("");
+	for (var i = 0; i < this.columns.length; i++)
+		row.push(this.columns[i].getTitle());
+
+	this.data.push(row);
+
+	for (var actorIndex = 0; actorIndex < this.actors.length; actorIndex++) {
+		var row = [];
+		var actor = this.actors[actorIndex];
+		row.push(actor.replace("mailto:",""));
+
+		for (var columnIndex = 0; columnIndex < this.columns.length; columnIndex++) {
+			var column = this.columns[columnIndex];
+			var value = column.getCellValue(actor, statements);
+			row.push(value);
+		}
+
+		this.data.push(row);
+	}
+
+	//console.log(this.data);
 }
 
 module.exports = XapiReport;
