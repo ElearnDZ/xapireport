@@ -40,4 +40,16 @@ describe("StatementFilter", function() {
 		filter.setVerbId("http://adlnet.gov/expapi/verbs/experienced");
 		expect(filter.matches(statement)).toEqual(true);
 	});
+
+	it("can filter a set of statements", function() {
+		var statements = [];
+		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[0])));
+		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[1])));
+
+		var filter = new StatementFilter();
+		expect(filter.filterStatements(statements).length).toEqual(2);
+
+		filter.setMinScore(125);
+		expect(filter.filterStatements(statements).length).toEqual(1);
+	});
 });

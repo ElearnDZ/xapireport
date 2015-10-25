@@ -15,13 +15,19 @@ function XapiScoreCard() {}
 XapiScoreCard.prototype.loadConfig = function(fn) {
 	var content = fs.readFileSync(fn);
 	var data = JSON.parse(content);
+	this.parseConfig(data);
+}
 
-	//console.log(data);
+/**
+ * Parse config
+ * @method parseConfig
+ */
+XapiScoreCard.prototype.parseConfig = function(config) {
 	this.tinCan = new TinCan({
 		recordStores: [{
-			endpoint: data.xapiEndpoint,
-			username: data.xapiUsername,
-			password: data.xapiPassword,
+			endpoint: config.xapiEndpoint,
+			username: config.xapiUsername,
+			password: config.xapiPassword,
 			allowFail: false
 		}]
 	});
