@@ -1,7 +1,7 @@
-xapiscorecard
+xapireport
 =============
 
-Generate a scorecard as a csv file for a number of users and a number of xapi targets.
+Generate a report as a csv file for a number of users and a number of xapi queries.
 
 Summary
 -------
@@ -19,23 +19,23 @@ This utility accepts a config file in json format like this:
 		"object": "http://www.example.com/no.ktouch.xml#1",
 		"minScore": "100",
 		"maxScore": "150",
-		"aggregate": "min",
-		"select": "timestamp"
+		"aggregateType": "min",
+		"aggregateField": "timestamp"
 	}, {
 		"verb": "http://adlnet.gov/expapi/verbs/completed",
 		"object": "http://www.example.com/no.ktouch.xml#1",
 		"minScore": "150",
 		"maxScore": "200",
-		"aggregate": "min",
-		"show": "timestamp"
+		"aggregateType": "min",
+		"aggregateField": "timestamp"
 	}, {
 		"verb": "http://adlnet.gov/expapi/verbs/attempted",
 		"object": "http://www.example.com/no.ktouch.xml#1",
-		"aggregate": "count"
+		"aggregateType": "count"
 	}]
 }
 ```
 
 Based on this, it generates a csv file for import into a spreadsheet program. 
-The users will be rows, each column is specified by the column definitions,
+The will be one row for each user, each column is specified by the column definitions,
 and each cell will contain the the information aggregated from that definition.
