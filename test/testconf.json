@@ -4,22 +4,15 @@
 	"xapiPassword": "c089ce76ca667862e615995b909f2ddf9acc1795",
 
 	"columns": [{
-		"verbId": "http://adlnet.gov/expapi/verbs/completed",
-		"objectId": "http://www.example.com/no.ktouch.xml#1",
-		"minScore": "100",
-		"maxScore": "150",
-		"aggregateType": "min",
-		"aggregateField": "timestamp"
+		"title": "Total",
+		"aggregateType": "count"
 	}, {
-		"verbId": "http://adlnet.gov/expapi/verbs/completed",
-		"objectId": "http://www.example.com/no.ktouch.xml#1",
-		"minScore": "150",
-		"maxScore": "200",
-		"aggregateType": "min",
-		"aggregateField": "timestamp"
+		"title": "Experienced",
+		"verbId": "http://adlnet.gov/expapi/verbs/experienced",
+		"aggregateType": "count"
 	}, {
+		"title": "Attempted",
 		"verbId": "http://adlnet.gov/expapi/verbs/attempted",
-		"objectId": "http://www.example.com/no.ktouch.xml#1",
 		"aggregateType": "count"
 	}]
 }

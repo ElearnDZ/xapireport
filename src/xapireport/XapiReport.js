@@ -3,7 +3,7 @@ var TinCan = require("tincanjs");
 var Thenable = require("tinp");
 var ArrayUtil = require("../utils/ArrayUtil");
 var XapiReportColumn = require("./XapiReportColumn");
-
+var TextTable = require("../utils/TextTable");
 /**
  * xAPI Report.
  */
@@ -67,6 +67,10 @@ XapiReport.prototype.onGetStatements = function(err, result) {
 	}
 
 	this.processStatements(result.statements);
+
+	TextTable.render(this.data);
+
+	this.runThenable.resolve();
 }
 
 /**
@@ -88,7 +92,7 @@ XapiReport.prototype.processStatements = function(statements) {
 	this.data = [];
 
 	var row = [];
-	row.push("");
+	row.push("Actor");
 	for (var i = 0; i < this.columns.length; i++)
 		row.push(this.columns[i].getTitle());
 
@@ -97,7 +101,7 @@ XapiReport.prototype.processStatements = function(statements) {
 	for (var actorIndex = 0; actorIndex < this.actors.length; actorIndex++) {
 		var row = [];
 		var actor = this.actors[actorIndex];
-		row.push(actor.replace("mailto:",""));
+		row.push(actor.replace("mailto:", ""));
 
 		for (var columnIndex = 0; columnIndex < this.columns.length; columnIndex++) {
 			var column = this.columns[columnIndex];
@@ -107,8 +111,14 @@ XapiReport.prototype.processStatements = function(statements) {
 
 		this.data.push(row);
 	}
+}
 
-	//console.log(this.data);
+/**
+ * Get csv string.
+ * @method getCsvString
+ */
+XapiReport.prototype.getCsvString = function() {
+	return CsvHack.stringify(this.data);
 }
 
 module.exports = XapiReport;
