@@ -4,6 +4,8 @@ var Thenable = require("tinp");
 var ArrayUtil = require("../utils/ArrayUtil");
 var XapiReportColumn = require("./XapiReportColumn");
 var TextTable = require("../utils/TextTable");
+var CsvHack = require("../utils/CsvHack");
+
 /**
  * xAPI Report.
  */
@@ -24,6 +26,15 @@ XapiReport.prototype.loadConfig = function(fn) {
  * @method parseConfig
  */
 XapiReport.prototype.parseConfig = function(config) {
+	var knownOptions = [
+		"config", "columns", "csv",
+		"xapiEndpoint", "xapiUsername", "xapiPassword"
+	];
+
+	for (c in config)
+		if (!ArrayUtil.contains(knownOptions, c))
+			throw new Error("Unknown option: " + c);
+
 	this.tinCan = new TinCan({
 		recordStores: [{
 			endpoint: config.xapiEndpoint,
@@ -40,6 +51,8 @@ XapiReport.prototype.parseConfig = function(config) {
 		column.parseConfig(config.columns[i]);
 		this.columns.push(column);
 	}
+
+	this.csv = config.csv;
 }
 
 /**
@@ -68,7 +81,13 @@ XapiReport.prototype.onGetStatements = function(err, result) {
 
 	this.processStatements(result.statements);
 
-	TextTable.render(this.data);
+	if (this.csv) {
+		var s = CsvHack.stringify(this.data);
+		fs.writeFileSync(this.csv, s);
+		console.log("Wrote: " + this.csv);
+	} else {
+		TextTable.render(this.data);
+	}
 
 	this.runThenable.resolve();
 }
