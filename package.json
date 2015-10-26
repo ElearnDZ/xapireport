@@ -7,12 +7,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tunapanda/xapiscorecard.git"
+    "url": "https://github.com/tunapanda/xapireport.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tunapanda/xapiscorecard/issues"
+    "url": "https://github.com/tunapanda/xapireport/issues"
   },
   "dependencies": {
     "minimist": "^1.2.0",
