@@ -14,5 +14,9 @@
 		"title": "Attempted",
 		"verbId": "http://adlnet.gov/expapi/verbs/attempted",
 		"aggregateType": "count"
+	},{
+		"title": "Min score",
+		"aggregateType": "min",
+		"aggregateField": "timestamp"
 	}]
 }

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var XapiReport = require("./xapireport/XapiReport");
 var minimist = require("minimist");
 var fs = require("fs");
