@@ -1,6 +1,6 @@
 {
   "name": "xapireport",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Report from xAPI",
   "bin": {
     "xapireport": "./src/xapireport.js"
