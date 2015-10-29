@@ -18,6 +18,7 @@ function usage() {
 	console.log("    xapiUser: <username>     - Specify xApi username.");
 	console.log("    xapiPassword: <pw>       - Specify xApi password.");
 	console.log("    columns: <json>          - Column definitions.");
+	console.log("    limit: <number>          - Limit number of statements in each call.");
 	console.log("    csv: <filename.csv>      - Save information to csv file.");
 	console.log();
 

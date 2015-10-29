@@ -5,6 +5,8 @@ var ArrayUtil = require("../utils/ArrayUtil");
 var XapiReportColumn = require("./XapiReportColumn");
 var TextTable = require("../utils/TextTable");
 var CsvHack = require("../utils/CsvHack");
+var url = require("url");
+var StringUtil = require("../utils/StringUtil");
 
 /**
  * xAPI Report.
@@ -30,7 +32,8 @@ XapiReport.prototype.loadConfig = function(fn) {
 XapiReport.prototype.parseConfig = function(config) {
 	var knownOptions = [
 		"config", "columns", "csv",
-		"xapiEndpoint", "xapiUsername", "xapiPassword"
+		"xapiEndpoint", "xapiUsername", "xapiPassword",
+		"limit"
 	];
 
 	for (c in config)
@@ -54,6 +57,10 @@ XapiReport.prototype.parseConfig = function(config) {
 		this.columns.push(column);
 	}
 
+	this.limit = 100;
+	if (config.limit)
+		this.limit = config.limit;
+
 	this.csv = config.csv;
 }
 
@@ -64,9 +71,13 @@ XapiReport.prototype.parseConfig = function(config) {
 XapiReport.prototype.run = function() {
 	this.runThenable = new Thenable();
 	this.tinCan.getStatements({
-		params: {},
+		params: {
+			limit: this.limit
+		},
 		callback: this.onGetStatements.bind(this)
 	});
+
+	this.statementCount = 0;
 
 	return this.runThenable;
 }
@@ -77,6 +88,7 @@ XapiReport.prototype.run = function() {
  */
 XapiReport.prototype.onGetStatements = function(err, result) {
 	if (err) {
+		console.log(err);
 		this.runThenable.reject(err);
 		return;
 	}
@@ -84,16 +96,37 @@ XapiReport.prototype.onGetStatements = function(err, result) {
 	for (var i = 0; i < result.statements.length; i++)
 		this.processStatement(result.statements[i]);
 
-	this.data = this.getData();
+	//console.log("got statements: " + result.statements.length);
+	//console.log("more: " + result.more);
+	//console.log(this.tinCan.recordStores[0].endpoint);
 
-	if (this.csv) {
-		fs.writeFileSync(this.csv, this.getCsvString());
-		console.log("Wrote: " + this.csv);
+	this.statementCount += result.statements.length;
+
+	if (result.more) {
+		console.log("Fetched " + this.statementCount + " statement(s), more...");
+
+		var endpoint = this.tinCan.recordStores[0].endpoint;
+		var parsed = url.parse(endpoint);
+		var more = StringUtil.connect(parsed.path, result.more);
+
+		this.tinCan.recordStores[0].moreStatements({
+			url: more,
+			callback: this.onGetStatements.bind(this)
+		});
 	} else {
-		TextTable.render(this.data);
-	}
+		console.log("Fetched " + this.statementCount + " statement(s), that's all!");
 
-	this.runThenable.resolve();
+		this.data = this.getData();
+
+		if (this.csv) {
+			fs.writeFileSync(this.csv, this.getCsvString());
+			console.log("Wrote: " + this.csv);
+		} else {
+			TextTable.render(this.data);
+		}
+
+		this.runThenable.resolve();
+	}
 }
 
 /**
