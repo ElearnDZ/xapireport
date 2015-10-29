@@ -8,6 +8,9 @@ var ArrayUtil = require("../utils/ArrayUtil");
 function StatementAggregator() {
 	this.aggregateType = StatementAggregator.COUNT;
 	this.aggregateField = StatementAggregator.SCORE;
+
+	this.mapValues = {};
+	this.valueCount = {};
 }
 
 StatementAggregator.COUNT = "count";
@@ -51,80 +54,125 @@ StatementAggregator.prototype.setAggregateField = function(aggregateField) {
 }
 
 /**
- * Get an array of all statement fields.
+ * Get the value to use from the statement.
+ * @method getStatementValue
  */
-StatementAggregator.prototype.getStatementFields = function(statements) {
-	var res = [];
+StatementAggregator.prototype.getStatementValue = function(statement) {
+	switch (this.aggregateField) {
+		case StatementAggregator.SCORE:
+			val = statement.result.score.raw;
+			break;
 
-	for (var i = 0; i < statements.length; i++) {
-		var statement = statements[i];
-		var val;
+		case StatementAggregator.TIMESTAMP:
+			val = Date.parse(statement.timestamp);
+			break;
 
-		switch (this.aggregateField) {
-			case StatementAggregator.SCORE:
-				val = statement.result.score.raw;
-				break;
+		case StatementAggregator.STORED:
+			val = Date.parse(statement.stored);
+			break;
 
-			case StatementAggregator.TIMESTAMP:
-				val = Date.parse(statement.timestamp);
-				break;
-
-			case StatementAggregator.STORED:
-				val = Date.parse(statement.stored);
-				break;
-		}
-
-		res.push(val);
+		default:
+			throw new Error("unknown aggregate field: " + this.aggregateField);
+			break;
 	}
 
-	return res;
+	return val;
 }
 
 /**
- * Compute aggregate.
- * @method aggregate
+ * Map a value.
+ * @mehtod mapValueForActorId
  */
-StatementAggregator.prototype.aggregate = function(statements) {
-	var values = this.getStatementFields(statements);
-	var res;
+StatementAggregator.prototype.mapValueForActorId = function(actorId, value) {
+	if (this.valueCount[actorId] == undefined)
+		this.valueCount[actorId] = 0;
+
+	this.valueCount[actorId]++;
 
 	switch (this.aggregateType) {
 		case StatementAggregator.COUNT:
-			return statements.length;
+			if (this.mapValues[actorId] == undefined)
+				this.mapValues[actorId] = 0;
+
+			this.mapValues[actorId]++;
 			break;
 
 		case StatementAggregator.MIN:
-			if (!values.length)
-				return null;
+			if (this.mapValues[actorId] == undefined)
+				this.mapValues[actorId] = value;
 
-			res = Math.min.apply(null, values);
+			else
+				this.mapValues[actorId] = Math.min(this.mapValues[actorId], value);
+
 			break;
 
 		case StatementAggregator.MAX:
-			if (!values.length)
-				return null;
+			if (this.mapValues[actorId] == undefined)
+				this.mapValues[actorId] = value;
 
-			res = Math.max.apply(null, values);
+			else
+				this.mapValues[actorId] = Math.max(this.mapValues[actorId], value);
+
 			break;
 
 		case StatementAggregator.AVG:
-			if (!values.length)
-				return null;
+			if (this.mapValues[actorId] == undefined)
+				this.mapValues[actorId] = 0;
 
-			var sum = 0;
+			this.mapValues[actorId] += value;
+			break;
+	}
+}
 
-			for (var i = 0; i < values.length; i++)
-				sum += values[i];
+/**
+ * Process a statement.
+ * @method processStatement
+ */
+StatementAggregator.prototype.processStatement = function(statement) {
+	var actorId = statement.actor.mbox;
+	actorId = actorId.replace("mailto:", "");
 
-			res = sum / values.length;
+	var value = this.getStatementValue(statement);
+	this.mapValueForActorId(actorId, value);
+}
+
+/**
+ * Get aggregated value.
+ * @method getAggregatedValue
+ */
+StatementAggregator.prototype.getAggregatedValue = function(actorId) {
+	actorId = actorId.replace("mailto:", "");
+
+	if (this.mapValues[actorId] == undefined) {
+		if (this.aggregateType == StatementAggregator.COUNT)
+			return 0;
+
+		else
+			return null;
+	}
+
+	var raw;
+
+	switch (this.aggregateType) {
+		case StatementAggregator.COUNT:
+			return this.mapValues[actorId];
+			break;
+
+		case StatementAggregator.MIN:
+		case StatementAggregator.MAX:
+			raw = this.mapValues[actorId];
+			break;
+
+		case StatementAggregator.AVG:
+			raw = this.mapValues[actorId] / this.valueCount[actorId];
 			break;
 	}
 
 	if (this.aggregateField == StatementAggregator.TIMESTAMP ||
 		this.aggregateField == StatementAggregator.STORED)
-		return new Date(res).toISOString();
+		return new Date(raw).toISOString();
 
-	return res;
+	return raw;
 }
 
 module.exports = StatementAggregator;

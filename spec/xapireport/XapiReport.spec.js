@@ -57,15 +57,13 @@ describe("XapiReport", function() {
 		var xapireport = new XapiReport();
 		xapireport.parseConfig(config);
 
-		var statements = [];
 		for (var i = 0; i < lldata.statements.length; i++)
-			statements.push(new TinCan.Statement(lldata.statements[i]));
+			xapireport.processStatement(new TinCan.Statement(lldata.statements[i]));
 
-		xapireport.processStatements(statements);
-		//console.log(xapireport.data);
+		var data=xapireport.getData();
 
-		expect(xapireport.data[1][0]).toEqual("bob@example.com");
-		expect(xapireport.data[2][0]).toEqual("alice@example.com");
-		expect(xapireport.data[1][3]).toEqual("2015-10-23T15:31:58.950Z");
+		expect(data[1][0]).toEqual("bob@example.com");
+		expect(data[2][0]).toEqual("alice@example.com");
+		expect(data[1][3]).toEqual("2015-10-23T15:31:58.950Z");
 	})
 });

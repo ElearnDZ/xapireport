@@ -74,7 +74,7 @@ StatementFilter.prototype.matches = function(statement) {
  * Filter out a number of statements.
  * @method filterStatements
  */
-StatementFilter.prototype.filterStatements = function(statements) {
+/*StatementFilter.prototype.filterStatements = function(statements) {
 	var res = [];
 
 	for (var i = 0; i < statements.length; i++)
@@ -82,6 +82,6 @@ StatementFilter.prototype.filterStatements = function(statements) {
 			res.push(statements[i]);
 
 	return res;
-}
+}*/
 
 module.exports = StatementFilter;

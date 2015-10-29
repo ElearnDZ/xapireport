@@ -9,7 +9,9 @@ var CsvHack = require("../utils/CsvHack");
 /**
  * xAPI Report.
  */
-function XapiReport() {}
+function XapiReport() {
+	this.actors = [];
+}
 
 /**
  * Load configuration.
@@ -79,11 +81,13 @@ XapiReport.prototype.onGetStatements = function(err, result) {
 		return;
 	}
 
-	this.processStatements(result.statements);
+	for (var i = 0; i < result.statements.length; i++)
+		this.processStatement(result.statements[i]);
+
+	this.data = this.getData();
 
 	if (this.csv) {
-		var s = CsvHack.stringify(this.data);
-		fs.writeFileSync(this.csv, s);
+		fs.writeFileSync(this.csv, this.getCsvString());
 		console.log("Wrote: " + this.csv);
 	} else {
 		TextTable.render(this.data);
@@ -96,40 +100,46 @@ XapiReport.prototype.onGetStatements = function(err, result) {
  * Process statements.
  * @method processStatements
  */
-XapiReport.prototype.processStatements = function(statements) {
-	this.actors = [];
+XapiReport.prototype.processStatement = function(statement) {
+	var email = statement.actor.mbox;
+	email = email.replace("mailto:", "");
 
-	for (var i = 0; i < statements.length; i++) {
-		var statement = statements[i];
-		var email = statement.actor.mbox;
+	if (!ArrayUtil.contains(this.actors, email))
+		this.actors.push(email);
 
-		if (!ArrayUtil.contains(this.actors, email))
-			this.actors.push(email);
-	}
+	for (var i = 0; i < this.columns.length; i++)
+		this.columns[i].processStatement(statement);
+}
 
-	//console.log(this.actors);
-	this.data = [];
+/**
+ * Get data.
+ * @method getData
+ */
+XapiReport.prototype.getData = function() {
+	var data = [];
 
 	var row = [];
 	row.push("Actor");
 	for (var i = 0; i < this.columns.length; i++)
 		row.push(this.columns[i].getTitle());
 
-	this.data.push(row);
+	data.push(row);
 
 	for (var actorIndex = 0; actorIndex < this.actors.length; actorIndex++) {
 		var row = [];
 		var actor = this.actors[actorIndex];
-		row.push(actor.replace("mailto:", ""));
+		row.push(actor);
 
 		for (var columnIndex = 0; columnIndex < this.columns.length; columnIndex++) {
 			var column = this.columns[columnIndex];
-			var value = column.getCellValue(actor, statements);
+			var value = column.getCellValue(actor);
 			row.push(value);
 		}
 
-		this.data.push(row);
+		data.push(row);
 	}
+
+	return data;
 }
 
 /**

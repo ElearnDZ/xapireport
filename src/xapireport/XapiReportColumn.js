@@ -59,21 +59,25 @@ XapiReportColumn.prototype.parseConfig = function(config) {
  * Get cell value based on email and data.
  * @method getCellValue
  */
-XapiReportColumn.prototype.getCellValue = function(actorEmail, statements) {
-	this.filter.setActorEmail(actorEmail);
-
-	var filteredStatements = this.filter.filterStatements(statements);
-	var value = this.aggregator.aggregate(filteredStatements);
-
-	return value;
+XapiReportColumn.prototype.getCellValue = function(actorEmail) {
+	return this.aggregator.getAggregatedValue(actorEmail);
 }
 
 /**
  * Get title.
  * @method getTitle
  */
-XapiReportColumn.prototype.getTitle=function() {
+XapiReportColumn.prototype.getTitle = function() {
 	return this.title;
+}
+
+/**
+ * Process statement.
+ * @method processStatement
+ */
+XapiReportColumn.prototype.processStatement = function(statement) {
+	if (this.filter.matches(statement))
+		this.aggregator.processStatement(statement);
 }
 
 module.exports = XapiReportColumn;

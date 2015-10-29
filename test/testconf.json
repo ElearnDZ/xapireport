@@ -17,6 +17,6 @@
 	},{
 		"title": "Min score",
 		"aggregateType": "min",
-		"aggregateField": "timestamp"
+		"aggregateField": "score"
 	}]
 }

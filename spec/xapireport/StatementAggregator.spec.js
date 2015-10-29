@@ -2,38 +2,46 @@ var TinCan = require("tincanjs");
 var statementData = require("../data/statementdata.json");
 var StatementAggregator = require("../../src/xapireport/StatementAggregator");
 
-describe("StatementFilter", function() {
-	it("can check if a statement matches", function() {
-
+describe("StatementAggregator", function() {
+	it("can get a value from a statement", function() {
 		var statements = [];
 		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[0])));
 		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[1])));
 
 		var aggregator = new StatementAggregator();
 
-		expect(aggregator.aggregate(statements)).toEqual(2);
+		expect(aggregator.getStatementValue(statements[0])).toEqual(123);
+	});
 
+	it("can process statements", function() {
+		var statements = [];
+		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[0])));
+		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[1])));
+
+		var aggregator = new StatementAggregator();
+		aggregator.processStatement(statements[0]);
+		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual(1);
+		aggregator.processStatement(statements[1]);
+		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual(2);
+
+
+		var aggregator = new StatementAggregator();
 		aggregator.setAggregateType(StatementAggregator.MIN);
-		aggregator.setAggregateField(StatementAggregator.SCORE);
-		expect(aggregator.aggregate(statements)).toEqual(123);
+		aggregator.processStatement(statements[0]);
+		aggregator.processStatement(statements[1]);
+		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual(123);
 
+		var aggregator = new StatementAggregator();
 		aggregator.setAggregateType(StatementAggregator.MAX);
-		aggregator.setAggregateField(StatementAggregator.SCORE);
-		expect(aggregator.aggregate(statements)).toEqual(200);
+		aggregator.processStatement(statements[0]);
+		aggregator.processStatement(statements[1]);
+		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual(200);
 
-		aggregator.setAggregateType(StatementAggregator.AVG);
-		aggregator.setAggregateField(StatementAggregator.SCORE);
-		expect(aggregator.aggregate(statements)).toEqual(161.5);
-
-		aggregator.setAggregateType(StatementAggregator.MIN);
-		aggregator.setAggregateField(StatementAggregator.TIMESTAMP);
-		expect(aggregator.aggregate(statements)).toEqual("2014-08-13T10:45:32.000Z");
-
+		var aggregator = new StatementAggregator();
 		aggregator.setAggregateType(StatementAggregator.MAX);
 		aggregator.setAggregateField(StatementAggregator.TIMESTAMP);
-		expect(aggregator.aggregate(statements)).toEqual("2014-08-13T10:55:32.000Z");
-
-		aggregator.setAggregateType(StatementAggregator.MIN);
-		expect(aggregator.aggregate(statements)).toEqual("2014-08-13T10:45:32.000Z");
+		aggregator.processStatement(statements[0]);
+		aggregator.processStatement(statements[1]);
+		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual("2014-08-13T10:55:32.000Z");
 	});
 });
