@@ -17,6 +17,18 @@ TextTable.divider = function(colWidths) {
 }
 
 /**
+ * Stringify a value for display.
+ * @method stringify
+ * @static
+ */
+TextTable.stringify = function(val) {
+	if (val === undefined || val === null)
+		return "";
+
+	return new String(val);
+}
+
+/**
  * Render the table
  * @method render
  * @static
@@ -29,7 +41,7 @@ TextTable.render = function(data) {
 			if (!colWidths[colIndex])
 				colWidths[colIndex] = 0;
 
-			var cell = new String(data[rowIndex][colIndex]);
+			var cell = TextTable.stringify(data[rowIndex][colIndex]);
 			colWidths[colIndex] = Math.max(colWidths[colIndex], cell.length);
 		}
 	}
@@ -41,7 +53,7 @@ TextTable.render = function(data) {
 		for (var colIndex = 0; colIndex < data[rowIndex].length; colIndex++) {
 			s += " ";
 
-			var cell = new String(data[rowIndex][colIndex]);
+			var cell = TextTable.stringify(data[rowIndex][colIndex]);
 			s += cell;
 			s += new Array(colWidths[colIndex] - cell.length + 1).join(" ");
 			s += " |";

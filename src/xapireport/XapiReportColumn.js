@@ -48,6 +48,10 @@ XapiReportColumn.prototype.parseConfig = function(config) {
 				this.title = value;
 				break;
 
+			case "dateFormat":
+				this.aggregator.setDateFormat(value);
+				break;
+
 			default:
 				throw new Error("Unexpected column option: " + key);
 		}

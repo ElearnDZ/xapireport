@@ -44,4 +44,22 @@ describe("StatementAggregator", function() {
 		aggregator.processStatement(statements[1]);
 		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual("2014-08-13T10:55:32.000Z");
 	});
+
+	it("has a configurable date format", function() {
+		var statements = [];
+		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[0])));
+		statements.push(new TinCan.Statement.fromJSON(JSON.stringify(statementData[1])));
+
+		var aggregator = new StatementAggregator();
+		aggregator.setAggregateType(StatementAggregator.MAX);
+		aggregator.setAggregateField(StatementAggregator.TIMESTAMP);
+		aggregator.setDateFormat("YYYY");
+		aggregator.processStatement(statements[0]);
+		aggregator.processStatement(statements[1]);
+
+		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual("2014");
+
+		aggregator.setDateFormat("YYYY MMM D");
+		expect(aggregator.getAggregatedValue("bob@example.com")).toEqual("2014 Aug 13");
+	});
 });

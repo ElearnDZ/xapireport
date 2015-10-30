@@ -1,6 +1,6 @@
 {
   "name": "xapireport",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Report from xAPI",
   "bin": {
     "xapireport": "./src/xapireport.js"
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "minimist": "^1.2.0",
+    "moment": "^2.10.6",
     "tincanjs": "^0.34.1",
     "tinp": "0.0.3"
   },

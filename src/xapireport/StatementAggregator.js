@@ -1,4 +1,5 @@
 var ArrayUtil = require("../utils/ArrayUtil");
+var moment = require("moment");
 
 /**
  * Aggregate a value from an array of statements
@@ -11,6 +12,8 @@ function StatementAggregator() {
 
 	this.mapValues = {};
 	this.valueCount = {};
+
+	this.dateFormat = null;
 }
 
 StatementAggregator.COUNT = "count";
@@ -137,6 +140,14 @@ StatementAggregator.prototype.processStatement = function(statement) {
 }
 
 /**
+ * Set date format
+ * @method setDateFormat
+ */
+StatementAggregator.prototype.setDateFormat = function(dateFormat) {
+	this.dateFormat = dateFormat;
+}
+
+/**
  * Get aggregated value.
  * @method getAggregatedValue
  */
@@ -169,8 +180,12 @@ StatementAggregator.prototype.getAggregatedValue = function(actorId) {
 	}
 
 	if (this.aggregateField == StatementAggregator.TIMESTAMP ||
-		this.aggregateField == StatementAggregator.STORED)
-		return new Date(raw).toISOString();
+		this.aggregateField == StatementAggregator.STORED) {
+		if (!this.dateFormat)
+			return new Date(raw).toISOString();
+
+		return moment(new Date(raw)).format(this.dateFormat);
+	}
 
 	return raw;
 }

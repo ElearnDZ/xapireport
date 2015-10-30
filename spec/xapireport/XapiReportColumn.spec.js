@@ -1,4 +1,6 @@
 var XapiReportColumn = require("../../src/xapireport/XapiReportColumn");
+var statementData = require("../data/statementdata.json");
+var TinCan = require("tincanjs");
 
 describe("XapiReportColumn", function() {
 	it("can be set up with parameters", function() {

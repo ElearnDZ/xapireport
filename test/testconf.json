@@ -18,5 +18,20 @@
 		"title": "Min score",
 		"aggregateType": "min",
 		"aggregateField": "score"
+	},{
+		"title": "Doesn't exist",
+		"verbId": "http://adlnet.gov/expapi/verbs/does_not_exist",
+		"aggregateType": "min",
+		"aggregateField": "timestamp"
+	},{
+		"title": "Doesn't exist",
+		"verbId": "http://adlnet.gov/expapi/verbs/does_not_exist",
+		"aggregateType": "min",
+		"aggregateField": "timestamp"
+	},{
+		"title": "test",
+		"aggregateType": "min",
+		"aggregateField": "timestamp",
+		"dateFormat": "MMM DD"
 	}]
 }

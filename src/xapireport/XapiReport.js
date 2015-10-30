@@ -107,7 +107,15 @@ XapiReport.prototype.onGetStatements = function(err, result) {
 
 		var endpoint = this.tinCan.recordStores[0].endpoint;
 		var parsed = url.parse(endpoint);
-		var more = StringUtil.connect(parsed.path, result.more);
+		var parsedMore = url.parse(result.more);
+
+		if (parsedMore.protocol)
+			more = result.more;
+
+		else
+			more = StringUtil.connect(parsed.path, result.more);
+
+		//console.log("computed more: " + more);
 
 		this.tinCan.recordStores[0].moreStatements({
 			url: more,
