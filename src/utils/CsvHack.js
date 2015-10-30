@@ -11,7 +11,11 @@ function CsvHack() {}
  * @method needsEscaping
  */
 CsvHack.needsEscaping = function(value) {
-	value = value.toString();
+	if (value === null || value === undefined)
+		value = "";
+
+	else
+		value = value.toString();
 
 	if (value.indexOf('"') >= 0)
 		return true;
