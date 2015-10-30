@@ -29,7 +29,8 @@ var config = minimist(process.argv.slice(2));
 if (config["config"]) {
 	var jsonConfig = JSON.parse(fs.readFileSync(config["config"]));
 	for (var o in jsonConfig)
-		config[o] = jsonConfig[o];
+		if (!config[o])
+			config[o] = jsonConfig[o];
 }
 
 if (!config["csv"] && !config["xapiEndpoint"])
